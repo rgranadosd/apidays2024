@@ -5,7 +5,7 @@ info:
   description: |
     This Arazzo Description documents the workflow of browsing products in the OnLineStore catalog. 
     To do this, you need to select the store and language, then browse the menu, select a category, get the grid, and finally access the product details.
-  version: 1.0.1
+  version: 1.0.0
 
 sourceDescriptions:
   - name: OnlineStoreConfig
