@@ -1,2 +1,2 @@
-# apidays2024
-apidays2024 -- demo arazzo
+# apiAddictsDay2024
+apiAddictsDay2024 -- Demo Arazzo
