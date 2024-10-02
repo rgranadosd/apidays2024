@@ -1,17 +1,17 @@
-name: Run Spectral on Pull Requests
+name: Spectral PR Check
 
 on:
-  - pull_request
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    name: Run Spectral
+  spectral:
     runs-on: ubuntu-latest
     steps:
-      # Check out the repository
       - uses: actions/checkout@v3
-
-      # Run Spectral
       - uses: stoplightio/spectral-action@latest
         with:
           file_glob: 'doc/api/*.yaml'
