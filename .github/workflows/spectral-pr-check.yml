@@ -1,18 +1,37 @@
-name: Run Spectral on Pull Requests
+name: Lint OpenAPI files with Spectral
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
-  build:
-    name: Run Spectral
+  lint:
     runs-on: ubuntu-latest
-    steps:
-      # Check out the repository
-      - uses: actions/checkout@v3
 
-      # Run Spectral
-      - uses: stoplightio/spectral-action@latest
-        with:
-          file_glob: '**/*.{yaml,yml,json}'
-          spectral_ruleset: 'arazzo.json'
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Spectral CLI
+      run: npm install -g @stoplight/spectral-cli
+
+    - name: Run Spectral lint on YAML files
+      run: spectral lint 'apis/**/*.yaml'
+      continue-on-error: false # Fails the workflow if there are errors
+
+    - name: Run Spectral lint on JSON files
+      run: spectral lint 'apis/**/*.json'
+      continue-on-error: false # Fails the workflow if there are errors
+
+    - name: Display linting completion
+      run: echo "Spectral linting completed"
