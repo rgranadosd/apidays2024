@@ -25,7 +25,7 @@ workflows:
     summary: "A workflow that guides users through the process of browsing and selecting products in the OnLineStore catalog."
     description: "Browse Products in OnLineStore Catalog"
     steps:
-      - stepId: selectStoreAndLanguage
+      - stepId: 
         description: "User chooses their country/store and preferred language."
         operationId: getWWCountries
         parameters: []
