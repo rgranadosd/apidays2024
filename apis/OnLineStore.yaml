@@ -8,16 +8,16 @@ info:
   version: 1.0.0
 sourceDescriptions:
   - name: OnlineStoreConfig
-    url: https://mycompany.jfrog.io//api/zosa-online-store-config-rest-stable-1.99.0/openapi-rest.yml
+    url: https://mycompany.jfrog.io//api/osa-online-store-config-rest-stable-1.99.0/openapi-rest.yml
     type: openapi
-  - name: zcatalogNavigation
-    url: https://mycompany.jfrog.io//api/zcatalog-navigation-rest-stable-5.1.0/openapi-rest.yml
+  - name: catalogNavigation
+    url: https://mycompany.jfrog.io//api/catalog-navigation-rest-stable-5.1.0/openapi-rest.yml
     type: openapi
-  - name: zcatalogProductGrids
+  - name: catalogProductGrids
     url: https://mycompany.jfrog.io/zcatalog-product-grids-rest-stable-7.5.0/openapi-rest.yml
     type: openapi
-  - name: zcatalogProduct
-    url: https://mycompany.jfrog.io//api/zcatalog-product-rest-stable/8.1.0/openapi-rest.yml
+  - name: catalogProduct
+    url: https://mycompany.jfrog.io//api/catalog-product-rest-stable/8.1.0/openapi-rest.yml
     type: openapi
     
 workflows:
