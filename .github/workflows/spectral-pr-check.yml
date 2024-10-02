@@ -13,5 +13,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: stoplightio/spectral-action@latest
-        with:
-          file_glob: 'doc/api/*.yaml'
+        with:          
+          file_glob: '**/*.{yaml,yml,json}'
