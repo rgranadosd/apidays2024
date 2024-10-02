@@ -15,3 +15,4 @@ jobs:
       - uses: stoplightio/spectral-action@latest
         with:
           file_glob: '**/*.{yaml,yml,json}'
+          spectral_ruleset: 'arazzo.json'
