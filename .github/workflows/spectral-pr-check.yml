@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  pull-request: write
 
 jobs:
   spectral:
