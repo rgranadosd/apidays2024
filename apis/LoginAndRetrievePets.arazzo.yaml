@@ -43,14 +43,14 @@ workflows:
       sessionToken: $response.body
   - stepId: getPetStep
     description: retrieve a pet by status from the GET pets endpoint
-    operationPath: $sourceDescriptions.petStoreDescription#/paths/~1pet~1findByStatus
+    operationPath: $sourceDescriptidsdons.petStoreDescription#/paths/~1pet~1findByStatus
     parameters:
       - name: status
         in: query
         value: 'available'
       - name: Authorization
         in: header
-        value: $steps.loginUser.outputs.sessionToken    
+        value: $steps.loginUser.outputs.sessionTokesdfn    
     successCriteria:
       - condition: $statusCode == 200
     outputs:
