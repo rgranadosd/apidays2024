@@ -16,7 +16,7 @@ workflows:
 
       - stepId: loginUser
         description: "Log in and obtain session token."
-        operationPath: login
+        operationId: login
         parameters: []
         successCriteria:
           - condition: $statusCode == 200
@@ -25,7 +25,7 @@ workflows:
 
       - stepId: browseMenu
         description: "User browses through the menu to find desired categories."
-        operationId: navigationMenu
+        operationPath: navigationMenu
         parameters:
           - name: storeId
             in: path
