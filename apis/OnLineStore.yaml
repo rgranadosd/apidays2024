@@ -27,7 +27,7 @@ workflows:
     steps:
       - stepId: selectStoreAndLanguage
         description: "User chooses their country/store and preferred language."
-        operationPath: getWWCountries
+        operationId: getWWCountries
         parameters: []
         successCriteria:
           - condition: $statusCode == 200
