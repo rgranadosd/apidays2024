@@ -16,7 +16,7 @@ workflows:
 
       - stepId: loginUser
         description: "Log in and obtain session token."
-        operationId: login
+        operationPath: login
         parameters: []
         successCriteria:
           - condition: $statusCode == 200
