@@ -1,3 +1,6 @@
+To add the name of the file being processed in the log output, you can modify the `Process each YAML file` step to include the filename in the `rmoa lint` command. Here's the updated `zuplo-integration.yml`:
+
+```yaml
 name: Rate my OAS
 
 on:
@@ -47,4 +50,6 @@ jobs:
               --minimum-score 70 \
               --max-errors 0 \
               --max-warnings 200
+              echo "Finished processing $file."
           done
+```
