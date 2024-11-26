@@ -13,3 +13,5 @@ jobs:
           apikey: ${{ secrets.RMOA_API_KEY }}
       - name: Rate My Open API
         run: rmoa lint
+
+ 
