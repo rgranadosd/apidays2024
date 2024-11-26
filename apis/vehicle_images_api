@@ -1,0 +1,1360 @@
+### Specification of Vehicle Images product
+### date 07.11.2024
+openapi: "3.0.2"
+info:
+  title: "Vehicle Images API"
+  version: "2.2"
+  description: |-
+    Vehicle Images offers access to original Mercedes-Benz vehicle images and equipment images. 
+    It provides access to exterior and interior images with parameters e.g. to display vehicles at day/night time or in Cabrio mode. 
+    It provides access to all available equipment images grouped by engine, paint, rim, trim and upholstery images with different resolutions (image types).
+  contact:
+    name: "Mercedes-Benz /developers product team"
+    url: "https://developer.mercedes-benz.com/contact/vehicle_images/technical_inquiry"
+servers:
+  - url: https://api.mercedes-benz.com/vehicle_images/v2
+    description: Production server
+security:
+  - ApiKey: []
+tags:
+  - name: Images
+    description: Vehicle Exterior and Interior Images
+  - name: Equipments
+    description: Vehicle Equipment Images
+# region path
+paths:
+  # region /vehicles and /images
+  /vehicles/{vehicleId}:
+    x-monetized: true
+    post:
+      tags:
+        - Images
+      operationId: PostVehicleImageIdsByData
+      summary: Request Vehicle ImageIds by individual customer values
+      description: |-
+        Resource offers image composing features and provides the requested number of images (perspectives mapped to images id's). 
+        The returned object contains the image id's for up to 36 exterior (EXT000 .. EXT350) perspectives, up to 6 interior 
+        (INT1 .. INT5, BET1) perspectives and up to 6 special interior (BIS1 - BIS6) perspectives. 
+        Background composing is only possible if transparent images are requested with parameter background=false. 
+        BIS perspectives could not be composed and will be provided with default settings. 
+        POST operation considers the parameters given in the request body returning successfully composed images only. 
+        Maximum request content size is defined with 10 MB (with single image size of 2 MB).
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      requestBody:
+        description: |-
+          Request body object with all required and optional attributes. 
+          imageParameters refers to image settings, composition defines the composing context and 
+          perspectives defines the list of requested perspectives to be considered for image composing.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleImagesRequestData'
+      responses:
+        '200':
+          $ref: '#/components/responses/VehicleImagesPostResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '413':
+          $ref: '#/components/responses/413ContentTooLarge'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+    get:
+      tags:
+        - Images
+      operationId: GetVehicleImageIdsByVehicleId
+      summary: Get Vehicle ImageIds by vehicleId
+      description: |-
+        Resource provides the defined number of exterior and interior images id's for the product package (Placeholder, Basic or 360) linked to the API-Key. 
+        The returned object contains the image id's for up to 36 exterior (EXT000 .. EXT350) perspectives, up to 6 interior (INT1 .. INT5, BET1) perspectives 
+        and up to 6 special interior (BIS1 - BIS6) perspectives for a 360° interior view.  
+        EXT000 defines the front view, EXT090 defines a rotation of 90 degrees to the right and so forth.
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+        - $ref: '#/components/parameters/background'
+        - $ref: '#/components/parameters/backgroundItem'
+        - $ref: '#/components/parameters/night'
+        - $ref: '#/components/parameters/roofOpen'
+        - $ref: '#/components/parameters/uniformImage'
+        - $ref: '#/components/parameters/cropped'
+        - $ref: '#/components/parameters/cropPosition'
+        - $ref: '#/components/parameters/fileFormat'
+        - $ref: '#/components/parameters/imageUrl'        
+        - $ref: '#/components/parameters/fallback'
+      responses:
+        '200':
+          $ref: '#/components/responses/VehicleImagesResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /images/{imageId}:
+    x-monetized: false
+    get:
+      tags:
+        - Images
+      operationId: GetVehicleImageByImageId
+      summary: Get Vehicle Image by imageId
+      description: |-
+        Resource provides a vehicle image belonging to the given image id in the selected file format. An image Id is valid only for 24 hours.
+      parameters:
+        - $ref: '#/components/parameters/imageId'
+      responses:
+        '200':
+          $ref: '#/components/responses/VehicleImageIdResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /content/imagekeys/{vehicleId}:
+    x-monetized: false
+    get:
+      tags:
+        - Images
+      operationId: GetImageKeysByVehicleId
+      summary: Get Vehicle Image Keys by vehicleId
+      description: |-
+        Resource provides master data information of available image information for that VIN/FIN.
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          $ref: '#/components/responses/VehicleImageKeysResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  /content/backgrounds/{vehicleId}:
+    x-monetized: false
+    get:
+      tags:
+        - Images
+      operationId: GetImageBackgroundsByVehicleId
+      summary: Get Vehicle Image Backgrounds by vehicleId
+      description: |-
+        Resource provides master data information of available image backgrounds for that VIN/FIN.
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          $ref: '#/components/responses/VehicleBackgroundsResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  # endregion
+  # region /equipments
+  /equipments/{vehicleId}:
+    x-monetized: true
+    get:
+      tags:
+        - Equipments
+      operationId: GetVehicleEquipmentsImagesByVehicleId
+      summary: Get Vehicle Equipments Images by vehicleId
+      description: |-
+        Resource returns a list of equipments images in the requested image formats and resolutions. 
+        Equipment images are grouped in categories for paint, rim, trim, engine, upholstery and equipments. 
+        We provide up to 6 images in up to 7 formats/resolutions for each equipment code.
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+        - $ref: '#/components/parameters/imageTypes'
+        - $ref: '#/components/parameters/locale'
+      responses:
+        '200':
+          $ref: '#/components/responses/VehicleEquipmentsResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '406':
+          $ref: '#/components/responses/406NotAcceptable'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalServerError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+  # endregion
+# endregion path
+# region components
+components:
+  # region parameters
+  parameters:
+    # region parameters /vehicles, /equipments
+    vehicleId:
+      name: vehicleId
+      in: path
+      description: The FIN or VIN of one specific vehicle.
+      required: true
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+        pattern: '^(4JG|55S|ADB|LE4|VSA|XDN|W10|W11|W12|W13|W14|W1A|W1K|W1L|W1M|W1N|W1P|W1R|W1V|W1W|W1X|W1Y|W1Z|W2W|W2X|W2Y|W2Z|WC3|WCD|WD4|WDA|WDB|WDC|WDD|WDF|WDP|WDR|WDV|WDW|WDX|WDY|WDZ|WME|WMX|WYA)[a-zA-Z0-9]{14}$'
+        example: 'W1K1771871J299999'
+    locale:
+      name: locale
+      in: query
+      description: |-
+        Market locale for country and language used for descriptions 
+        (ISO 3166 countries, ISO 639 languages). Only a limited number of locales are supported.
+      required: true
+      example: 'de_DE'
+      schema:
+        $ref: '#/components/schemas/Locales'
+    # endregion
+    # region parameters /vehicles
+    night:
+      name: night
+      in: query
+      description: Set 'true', if you are looking for all images with the night view 
+        and the vehicle's headlights turned on. Optional parameter with default value 'false'.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    roofOpen:
+      name: roofOpen
+      in: query
+      description: Set 'true', if you are looking for images with the roof open. 
+        This option is only valid for cabrios. Optional parameter with default value 'false'.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    background:
+      name: background
+      in: query
+      description: This optional property defines the images background. The default value is 'no background' (transparent). 
+        It is also possible to set the parameter explicitly to true to retrieve 
+        the images with a high level of detail and realistic reflections and light incidence.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    backgroundItem:
+      name: backgroundItem
+      in: query
+      description: This optional property defines the background image if background is true. Use the 
+        '/content/backrounds/{vehicleId}' endpoint to get all available backgroundItem options for 
+        the requested vehicle.
+      required: false
+      schema:
+        type: string
+        minLength: 2
+        maxLength: 3
+    uniformImage:
+      name: uniformImage
+      in: query
+      description: This optional property defines the vehicle postion for transparent images and enables a cross-model based consistent 
+        positioning of the vehicles according to customers needs. Possible values are 'none' (default), 'center', 'stage', 'wheel' or 'middle'.
+      required: false
+      schema:
+        type: string
+        default: none
+        enum:
+          - none
+          - center
+          - stage
+          - wheel
+          - middle
+    cropped:
+      name: cropped
+      in: query
+      description: This optional property defines the image size, either '16:9' or '4:3' 
+        format with a resolution of 1600x1200. Default value is '16:9'.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    cropPosition:
+      name: cropPosition
+      in: query
+      description: This optional property defines the position of the white-space frame for 4:3 cropped images (cropped='true'). 
+        Possible values are 'both' (top and bottom), top (only) or bottom (only).
+      required: false
+      schema:
+        type: string
+        default: both
+        enum:
+          - both
+          - top
+          - bottom
+    fileFormat:
+      name: fileFormat
+      in: query
+      description: This optional property defines the images format either png, jpeg or webp.
+        The default value is the efficient file format webp.
+      required: false
+      schema:
+        type: string
+        default: webp
+        enum:
+          - png
+          - jpeg
+          - webp
+    imageUrl:
+      name: imageUrl
+      in: query
+      description: This optional property defines images response using the imageId logic (default) or responds the image url's.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    fallback:
+      name: fallback
+      in: query
+      description: This optional property defines if default images should be returned, if requested images are not available.
+      required: false
+      schema:
+        type: boolean
+        default: false
+    # endregion
+    # region parameters /images
+    imageId:
+      name: imageId
+      in: path
+      description: imageId representing a vehicle image.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    # endregion
+    # region parameters /equipments
+    imageTypes:
+      name: imageTypes
+      in: query
+      description: This property defines the image file formats and resolutions 
+        for the requested vehicle equipments images, e.g. P26 = png with 71x71 px. 
+        With the default behavior all available imageTypes are provided. 
+        Not affecting engine, paint, rim, trim and upholstery image categories.
+      required: false
+      schema:
+        type: string
+        default: A22,A23,A24,A25,A30,A31,A34,A40,A41,A42,P26,P29,P35
+    # endregion
+  # endregion parameters
+  # region responses
+  responses:
+    VehicleImagesResponse:
+      description:
+        Successful response (OK) containing all available imageId's (default) or image url's 
+        for the requested vehicle images package depending on imageUrl parameter value. 
+        The response contains up to 36 exterior (EXT000 - EXT360), up to 6 interior 
+        (INT1 - INT5, BET1) and up to 6 additonal special interior (BIS1 .. BIS6) perspectives.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/VehicleImagesResponse'
+              - $ref: '#/components/schemas/VehicleImagesUrlResponse'
+    VehicleImagesPostResponse:
+      description:
+        Successful response (OK) containing all available imageId's for the requested vehicle images package. 
+        The response contains up to 36 exterior (EXT000 - EXT360), up to 6 interior 
+        (INT1 - INT5, BET1) and up to 6 additonal special interior (BIS1 .. BIS6) perspectives.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VehicleImagesResponse'
+    VehicleImageIdResponse:
+      description: Successful response (OK) containing the image in the requested format.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        image/png:
+          schema:
+            type: string
+            format: binary
+        image/jpeg:
+          schema:
+            type: string
+            format: binary
+        image/webp:
+          schema:
+            type: string
+            format: binary
+    VehicleImageKeysResponse:
+      description:
+        Successful response (OK) containing all available image keys for the requested vehicle.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VehicleImageKeysResponse'
+    VehicleBackgroundsResponse:
+      description:
+        Successful response (OK) containing all available backgrounds for the requested vehicle.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VehicleBackgroundsResponse'
+    VehicleEquipmentsResponse:
+      description: Successful response (OK) containing all equipments images for the requested vehicleId.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VehicleEquipmentsResponse'
+    # region further error response valid for all resources
+    400BadRequest:
+      description: |-
+        One of the provided parameters was invalid (BAD_REQUEST). 
+        Verify your query and inspect the global error object in the response for further information.
+        Possible Reasons:
+        * Missing or invalid parameter(s)
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    401Unauthorized:
+      description: |-
+        Authorization failed (UNAUTHORIZED). Verify your apikey and inspect
+        the global error object in the response for further information.
+          Possible Reasons:
+          * Missing or invalid API-Key
+          * Invalid URI resource
+          * Exceeded subscription quota
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was assigned
+            to the request for internal tracing and logging. Provide this request
+            id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    403Forbidden:
+      description: |-
+        Access to vehicle refused (FORBIDDEN). Inspect the global error object
+        in the response for further information.
+          Possible Reasons:
+          * Failed to access the requested URI resource
+          * URI resource doesn't exists
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was assigned
+            to the request for internal tracing and logging. Provide this request
+            id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    404NotFound:
+      description: |-
+        The requested vehicleId or imageId could not be resolved to an existing vehicle
+        (NOT_FOUND). Verify the used vehicleId or imageId and inspect the global error
+        object in the response for further information.
+          Possible Reasons:
+          * VEHICLE_NOT_FOUND
+          * VEHICLE_DATA_NOT_FOUND
+          * IMAGE_NOT_FOUND
+          * DATA_NOT_FOUND
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    406NotAcceptable:
+      description: |-
+        The request and given header values could not be accepted (NOT_ACCEPTABLE) and processing is denied.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    413ContentTooLarge:
+      description: |-
+        The given POST payload body content is too large and exceeds allowed size (CONTENT_TOO_LARGE).
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was
+            assigned to the request for internal tracing and logging. Provide
+            this request id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    429TooManyRequests:
+      description: |-
+        The service received too many requests in a given amount of time
+        (TOO_MANY_REQUESTS). Verify your calling behaviour and inspect the
+        global error object in the response for further information.
+          Possible Reasons:
+          * EXCEEDED_CALL_AMOUNTS
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was assigned
+            to the request for internal tracing and logging. Provide this request
+            id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    500InternalServerError:
+      description: Server encountered an internal error (INTERNAL_SERVER_ERROR).
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was assigned
+            to the request for internal tracing and logging. Provide this request
+            id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    503ServiceUnavailable:
+      description: |-
+        Service is currently not available or the requested asset is not ready yet
+        (SERVICE_UNAVAILABLE). Please wait and retry the request call later again.
+      headers:
+        X-Request-ID:
+          description: Returns a randomly generated (unique) request id that was assigned
+            to the request for internal tracing and logging. Provide this request
+            id for troubleshooting in a support case.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    # endregion
+  # endregion
+  # region schemas
+  schemas:
+    # region Vehicle Images schemas
+    # region POST schema objects
+    VehicleImagesRequestData:
+      type: object
+      additionalProperties: false
+      required:
+        - composition
+      properties:
+        imageParameters:
+          $ref: '#/components/schemas/ImageParameters'
+        composition:
+          $ref: '#/components/schemas/Composition'
+        perspectives:
+          $ref: '#/components/schemas/Perspectives'
+    BinaryImage:
+      type: string
+      description: image in base64 binary format (jgep, png and webp allowed)
+      maxLength: 2000000
+      format: base64
+      example: '/9j/4AAQSkZJRgABAQA ... MBjGMBjGMD/2Q=='
+    Composition:
+      type: object
+      description: |-
+        Defines the list of given images and related image composing parameters. 
+        At least one of the images is required (background, banner, logo left or logo right). 
+        backgroundImage will be considered if vehicle images are requested with background=false.
+      properties:
+        backgroundImage:
+          $ref: '#/components/schemas/BinaryImage'
+        bannerImage:
+          $ref: '#/components/schemas/BinaryImage'
+        logoUpperLeft:
+          $ref: '#/components/schemas/BinaryImage'
+        logoUpperRight:
+          $ref: '#/components/schemas/BinaryImage'
+        lulIndentTop:
+          type: integer
+          format: int32
+          description: Logo upper left indent top in px
+          minimum: 0
+          maximum: 100
+          default: 20
+        lulIndentLeft:
+          type: integer
+          format: int32
+          description: Logo upper left indent left in px
+          minimum: 0
+          maximum: 100
+          default: 20
+        lulResize:
+          type: integer
+          format: int32
+          description: Logo upper left resize factor in percent
+          minimum: 25
+          maximum: 400
+          default: 100
+        lurIndentTop:
+          type: integer
+          format: int32
+          description: Logo upper right indent top in px
+          minimum: 0
+          maximum: 100
+          default: 20
+        lurIndentRight:
+          type: integer
+          format: int32
+          description: Logo upper right indent right in px
+          minimum: 0
+          maximum: 100
+          default: 20
+        lurResize:
+          type: integer
+          format: int32
+          description: Logo upper right resize factor in percent
+          minimum: 25
+          maximum: 400
+          default: 100
+        scaleToFit:
+          type: boolean
+          description: Scales background image and banner image to fit to vehicle image size
+          default: true
+    ImageParameters:
+      type: object
+      description: Defines the requested vehicle image parameters (default value uniformImage=middle)
+      properties:
+        background:
+          $ref: '#/components/schemas/Background'
+        backgroundItem:
+          $ref: '#/components/schemas/BackgroundItem'
+        cropped:
+          $ref: '#/components/schemas/Cropped'
+        cropPosition:
+          $ref: '#/components/schemas/CropPosition'
+        fileFormat:
+          $ref: '#/components/schemas/FileFormat'
+        night:
+          $ref: '#/components/schemas/Night'
+        roofOpen:
+          $ref: '#/components/schemas/RoofOpen'
+        uniformImage:
+          $ref: '#/components/schemas/UniformImage'
+        fallback:
+          $ref: '#/components/schemas/Fallback'
+    Perspectives:
+      type: array
+      description: Defines the list of requested image perspectives (resulting imageId's)
+      uniqueItems: true
+      minItems: 1
+      maxItems: 36
+      items:
+        type: string
+        example: EXT270
+        default: EXT330
+        enum:
+          - EXT000
+          - EXT010
+          - EXT020
+          - EXT030
+          - EXT040
+          - EXT050
+          - EXT060
+          - EXT070
+          - EXT080
+          - EXT090
+          - EXT100
+          - EXT110
+          - EXT120
+          - EXT130
+          - EXT140
+          - EXT150
+          - EXT160
+          - EXT170
+          - EXT180
+          - EXT190
+          - EXT200
+          - EXT210
+          - EXT220
+          - EXT230
+          - EXT240
+          - EXT250
+          - EXT260
+          - EXT270
+          - EXT280
+          - EXT290
+          - EXT300
+          - EXT310
+          - EXT320
+          - EXT330
+          - EXT340
+          - EXT350
+          - INT1
+          - INT2
+          - INT3
+          - INT4
+          - INT5
+          - BET1
+          - BIS1
+          - BIS2
+          - BIS3
+          - BIS4
+          - BIS5
+          - BIS6
+    Night:
+      type: boolean
+      description: Set 'true', if you are looking for all images with the night view 
+        and the vehicle's headlights turned on. Optional parameter with default value 'false'.
+      default: false
+    RoofOpen:
+      type: boolean
+      description: Set 'true', if you are looking for images with the roof open. 
+        This option is only valid for cabrios. Optional parameter with default value 'false'.
+      default: false
+    Background:
+      type: boolean
+      description: This optional property defines the images background. The default value is 'no background' (transparent). 
+        It is also possible to set the parameter explicitly to true to retrieve 
+        the images with a high level of detail and realistic reflections and light incidence. 
+        For requests with background=true the composing logic will use CGI backgrounds ignoring any given background image(s).
+      default: false
+    BackgroundItem:
+      type: string
+      description: This optional property defines the background image if background is true. Use the '/content/backrounds/{vehicleId}' endpoint to get all available backgroundItem options for the requested vehicle.
+    UniformImage:
+      type: string
+      description: This optional property defines the vehicle postion for transparent images and enables a cross-model based consistent 
+        positioning of the vehicles according to customers needs. Possible values are 'none' (default), 'center', 'stage', 'wheel' or 'middle'.
+      default: none
+      example: stage
+      enum:
+        - none
+        - center
+        - stage
+        - wheel
+        - middle
+    Cropped:
+      type: boolean
+      description: This optional property defines the image size, either '16:9' or '4:3' 
+        format with a resolution of 1600x1200. Default value is '16:9'.
+      default: false
+    CropPosition:
+      type: string
+      description: This optional property defines the position of the white-space frame for 4:3 cropped images (cropped='true'). 
+        Possible values are 'both' (top and bottom), top (only) or bottom (only).
+      default: both
+      enum:
+        - both
+        - top
+        - bottom
+    FileFormat:
+      type: string
+      description: This optional property defines the images format either png, jpeg or webp.
+        The default value is the efficient file format webp.
+      default: webp
+      enum:
+        - png
+        - jpeg
+        - webp
+    Fallback:
+      type: boolean
+      description: This optional property defines if default images should be returned, if requested images with given parameters are not available.
+      default: false
+    # End region POST schema objects
+    VehicleImagesResponse:
+      type: object
+      properties:
+        EXT000:
+          $ref: '#/components/schemas/ImageId'
+        EXT010:
+          $ref: '#/components/schemas/ImageId'
+        EXT020:
+          $ref: '#/components/schemas/ImageId'
+        EXT030:
+          $ref: '#/components/schemas/ImageId'
+        EXT040:
+          $ref: '#/components/schemas/ImageId'
+        EXT050:
+          $ref: '#/components/schemas/ImageId'
+        EXT060:
+          $ref: '#/components/schemas/ImageId'
+        EXT070:
+          $ref: '#/components/schemas/ImageId'
+        EXT080:
+          $ref: '#/components/schemas/ImageId'
+        EXT090:
+          $ref: '#/components/schemas/ImageId'
+        EXT100:
+          $ref: '#/components/schemas/ImageId'
+        EXT110:
+          $ref: '#/components/schemas/ImageId'
+        EXT120:
+          $ref: '#/components/schemas/ImageId'
+        EXT130:
+          $ref: '#/components/schemas/ImageId'
+        EXT140:
+          $ref: '#/components/schemas/ImageId'
+        EXT150:
+          $ref: '#/components/schemas/ImageId'
+        EXT160:
+          $ref: '#/components/schemas/ImageId'
+        EXT170:
+          $ref: '#/components/schemas/ImageId'
+        EXT180:
+          $ref: '#/components/schemas/ImageId'
+        EXT190:
+          $ref: '#/components/schemas/ImageId'
+        EXT200:
+          $ref: '#/components/schemas/ImageId'
+        EXT210:
+          $ref: '#/components/schemas/ImageId'
+        EXT220:
+          $ref: '#/components/schemas/ImageId'
+        EXT230:
+          $ref: '#/components/schemas/ImageId'
+        EXT240:
+          $ref: '#/components/schemas/ImageId'
+        EXT250:
+          $ref: '#/components/schemas/ImageId'
+        EXT260:
+          $ref: '#/components/schemas/ImageId'
+        EXT270:
+          $ref: '#/components/schemas/ImageId'
+        EXT280:
+          $ref: '#/components/schemas/ImageId'
+        EXT290:
+          $ref: '#/components/schemas/ImageId'
+        EXT300:
+          $ref: '#/components/schemas/ImageId'
+        EXT310:
+          $ref: '#/components/schemas/ImageId'
+        EXT320:
+          $ref: '#/components/schemas/ImageId'
+        EXT330:
+          $ref: '#/components/schemas/ImageId'
+        EXT340:
+          $ref: '#/components/schemas/ImageId'
+        EXT350:
+          $ref: '#/components/schemas/ImageId'
+        INT1:
+          $ref: '#/components/schemas/ImageId'
+        INT2:
+          $ref: '#/components/schemas/ImageId'
+        INT3:
+          $ref: '#/components/schemas/ImageId'
+        INT4:
+          $ref: '#/components/schemas/ImageId'
+        INT5:
+          $ref: '#/components/schemas/ImageId'
+        BET1:
+          $ref: '#/components/schemas/ImageId'
+        BIS1:
+          $ref: '#/components/schemas/ImageId'
+        BIS2:
+          $ref: '#/components/schemas/ImageId'
+        BIS3:
+          $ref: '#/components/schemas/ImageId'
+        BIS4:
+          $ref: '#/components/schemas/ImageId'
+        BIS5:
+          $ref: '#/components/schemas/ImageId'
+        BIS6:
+          $ref: '#/components/schemas/ImageId'
+      description: The response object contains the image ids of all available perspectives.
+    VehicleImagesUrlResponse:
+      type: object
+      properties:
+        EXT000:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT010:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT020:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT030:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT040:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT050:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT060:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT070:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT080:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT090:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT100:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT110:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT120:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT130:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT140:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT150:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT160:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT170:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT180:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT190:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT200:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT210:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT220:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT230:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT240:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT250:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT260:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT270:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT280:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT290:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT300:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT310:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT320:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT330:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT340:
+          $ref: '#/components/schemas/ImageUrl'
+        EXT350:
+          $ref: '#/components/schemas/ImageUrl'
+        INT1:
+          $ref: '#/components/schemas/ImageUrl'
+        INT2:
+          $ref: '#/components/schemas/ImageUrl'
+        INT3:
+          $ref: '#/components/schemas/ImageUrl'
+        INT4:
+          $ref: '#/components/schemas/ImageUrl'
+        INT5:
+          $ref: '#/components/schemas/ImageUrl'
+        BET1:
+          $ref: '#/components/schemas/ImageUrl'
+        BIS1:
+          $ref: '#/components/schemas/ImageUrl'
+        BIS2:
+          $ref: '#/components/schemas/ImageUrl'
+        BIS3:
+          $ref: '#/components/schemas/ImageUrl'
+        BIS4:
+          $ref: '#/components/schemas/ImageUrl'
+        BIS5:
+          $ref: '#/components/schemas/ImageUrl'
+        BIS6:
+          $ref: '#/components/schemas/ImageUrl'
+      description: The response object contains the image urls of all available perspectives.
+    ImageId:
+      type: string
+      format: uuid
+      description: String representing the image id.
+    ImageUrl:
+      type: string
+      maxLength: 600
+      description: String representing the image url.
+    VehicleImageKeysResponse:
+      type: object
+      description: The response object holds the perspectives, image types, states and
+        image keys of the requested vehicle
+      required:
+        - images
+      properties:
+        images:
+          $ref: '#/components/schemas/ImageInfoContent'
+    ImageInfoContent:
+      type: object
+      description: A list holds the perspectives, image types, states and image keys
+      properties:
+        exterior:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/ImageInfo'
+        interior:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/ImageInfo'
+        special:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          maxItems: 1
+          items:
+            $ref: '#/components/schemas/ImageInfo'
+    ImageInfo:
+      type: object
+      description: An object holds image perspectives, image types, states and image keys
+      properties:
+        perspectives:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 36
+          items:
+            type: string
+        imageTypes:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+        states:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+        imageKeys:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          maxItems: 5
+          items:
+            type: string
+    VehicleBackgroundsResponse:
+      type: object
+      description: The response object holds the backgrounds of the requested FIN or VIN.
+      required:
+        - backgrounds
+      properties:
+        backgrounds:
+          $ref: '#/components/schemas/BackgroundInfoContent'
+    BackgroundInfoContent:
+      type: object
+      description: An object that holds the default and available backgrounds
+      properties:
+        default:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BackgroundInfo'
+        available:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BackgroundInfo'
+    BackgroundInfo:
+      type: object
+      description: An object holds the background description
+      properties:
+        description:
+          type: string
+    # endregion
+    # region Vehicle Equipments schemas
+    VehicleEquipmentsResponse:
+      type: object
+      properties:
+        ENGINE:
+          $ref: '#/components/schemas/ComponentList'
+        TRIM:
+          $ref: '#/components/schemas/ComponentList'
+        RIM:
+          $ref: '#/components/schemas/ComponentList'
+        UPHOLSTERY:
+          $ref: '#/components/schemas/ComponentList'
+        PAINT:
+          $ref: '#/components/schemas/ComponentList'
+        PAINT2:
+          $ref: '#/components/schemas/ComponentList'
+        EQUIPMENTS:
+          $ref: '#/components/schemas/EquipmentsList'
+      description: Set of images for engine, trim, rim, upholstery, paint and equipments codes 
+        in the requested imageType resolution with descriptions in requested locale.
+    CodeImageUrl:
+      type: string
+      description: URL pointing to an option code image.
+    CodeDescription:
+      type: object
+      description: Option code and description in the requested locale.
+      properties:
+        code:
+          description: Option code
+          type: string
+          minLength: 3
+          maxLength: 4
+        text:
+          description: |-
+            Description of an option code in the requested locale. 
+            Default language is used if requested locale is not available.
+          type: string
+          maxLength: 80
+    EquipmentImages:
+      type: object
+      description: |-
+        An object containing an URL-List for the equipment. If several 
+        imageTypes sent response contains a map with the imageTypes as keys for
+        url list objects.
+      properties:
+        urls:
+          description: list of 1 to 6 image URLs
+          type: array
+          uniqueItems: true
+          minItems: 1
+          maxItems: 6
+          items:
+            type: string
+    ComponentList:
+      type: object
+      description: |-
+        The response object holds a component object containing all urls for the 
+        requested imageTypes and descriptive information.
+      properties:
+        desc:
+          $ref: '#/components/schemas/CodeDescription'
+      additionalProperties:
+        $ref: '#/components/schemas/CodeImageUrl'
+    EquipmentsList:
+      type: object
+      description: |-
+        A map holding an image object containing all urls for the requested imageTypes 
+        and descriptive information, e.g. option code.
+      additionalProperties:
+        properties:
+          desc:
+            $ref: '#/components/schemas/CodeDescription'
+        additionalProperties:
+          $ref: '#/components/schemas/EquipmentImages'
+    # endregion
+    # region Common shared schemas
+    Locales:
+      type: string
+      minLength: 5
+      maxLength: 5
+      description: |-
+        Market locale for country and language used for descriptions 
+        (ISO 3166 countries, ISO 639 languages).
+      example: de_DE
+      default: de_DE
+      enum:
+        - ar_OM
+        - bg_BG
+        - da_DK
+        - de_AT
+        - de_CH
+        - de_DE
+        - de_IT
+        - el_GR
+        - en_AE
+        - en_BD
+        - en_BE
+        - en_BH
+        - en_CA
+        - en_DO
+        - en_DU
+        - en_EE
+        - en_FI
+        - en_GB
+        - en_IE
+        - en_IL
+        - en_KR
+        - en_KW
+        - en_KZ
+        - en_ID
+        - en_LK
+        - en_LT
+        - en_LV
+        - en_NL
+        - en_NO
+        - en_OM
+        - en_PH
+        - en_PL
+        - en_RO
+        - en_SL
+        - en_US
+        - en_XH
+        - es_CL
+        - es_CR
+        - es_DO
+        - es_ES
+        - es_MX
+        - es_PA
+        - es_PY
+        - et_EE
+        - fi_FI
+        - fr_CH
+        - fr_FR
+        - fr_MA
+        - he_IL
+        - hr_HR
+        - hu_HU
+        - is_IS
+        - it_CH
+        - it_IT
+        - ko_KR
+        - lt_LT
+        - lv_LV
+        - no_NO
+        - pl_PL
+        - ro_RO
+        - ru_KZ
+        - sl_SL
+        - sr_RS
+        - sv_SE
+        - uk_UA
+    # endregion
+    # region error
+    Error:
+      type: object
+      required:
+        - statusCode
+      properties:
+        statusCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: Error status code
+        errorMessage:
+          type: string
+          maxLength: 20
+          description: Error code message
+        message:
+          type: string
+          maxLength: 100
+          description: Error detailed description
+      description: The error object contains detailed information about the error.
+      # endregion error
+  # region security schemas
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      name: x-api-key
+      description: Encrypted key for gateway authentication
+      in: header
+# endregion security schemas
+# endregion schemas
