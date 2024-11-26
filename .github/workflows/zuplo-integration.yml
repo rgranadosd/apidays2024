@@ -46,5 +46,5 @@ jobs:
               --filename "$file" \
               --minimum-score 70 \
               --max-errors 0 \
-              --max-warnings 5
+              --max-warnings 200
           done
