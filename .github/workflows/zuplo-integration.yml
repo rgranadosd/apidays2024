@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Debug - List files in apis directory
+        run: ls -l ./apis
       - uses: zuplo/rmoa-action@v1
         with:
-            filepath: 'apis/vehicle_images_api.yaml'
-            apikey: zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e
+          filepath: 'apis/vehicle_images_api.yaml' # Ruta explícita
+          apikey: zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e
       - name: Rate My Open API
         run: rmoa lint .
