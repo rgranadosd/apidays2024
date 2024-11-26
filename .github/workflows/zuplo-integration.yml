@@ -16,23 +16,26 @@ jobs:
       # Paso 1: Checkout del repositorio
       - uses: actions/checkout@v4
 
-      # Paso 2: Debug para listar archivos en la carpeta apis (opcional, pero útil para verificar estructura)
+      # Paso 2: Debug para listar archivos en la carpeta apis
       - name: Debug - List files in apis directory
         run: ls -l ./apis
 
-      # Paso 3: Instalar Node.js y RMOA (si es necesario ejecutar comandos adicionales)
-      - name: Install Node.js and RMOA
+      # Paso 3: Instalar la versión requerida de Node.js (20.0.0 o superior)
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16 # Ajusta la versión si es necesario
-      - run: npm install -g rmoa
+          node-version: '20' # Instala la última versión compatible de Node.js 20.x
 
-      # Paso 4: Ejecutar RMOA action para analizar los archivos YAML
+      # Paso 4: Instalar RMOA
+      - name: Install RMOA
+        run: npm install -g rmoa
+
+      # Paso 5: Ejecutar RMOA action para analizar el archivo OpenAPI
       - uses: zuplo/rmoa-action@v1
         with:
           filepath: 'apis/vehicle_images_api.yaml' # Cambia si deseas analizar otro archivo
           apikey: zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e
 
-      # Paso 5: Usar RMOA para comandos adicionales de linting
+      # Paso 6: Usar RMOA CLI para análisis adicional si es necesario
       - name: Run RMOA lint
         run: rmoa lint apis/vehicle_images_api.yaml
