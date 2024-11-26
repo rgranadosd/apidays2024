@@ -16,15 +16,21 @@ jobs:
       # Paso 1: Checkout del repositorio
       - uses: actions/checkout@v4
 
-      # Paso 2: Debug para listar archivos en la carpeta apis
-      - name: Debug - List files in apis directory
-        run: ls -l ./apis
+      # Paso 2: Validar que cada archivo tenga la versión de OpenAPI
+      - name: Validate OpenAPI version in YAML files
+        run: |
+          for file in ./apis/*.yaml; do
+            if ! grep -q "openapi:" "$file"; then
+              echo "ERROR: $file is missing 'openapi' version. Please specify a valid OpenAPI version (e.g., 3.0.2)."
+              exit 1
+            fi
+          done
 
       # Paso 3: Instalar la versión requerida de Node.js (20.0.0 o superior)
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Instala la última versión compatible de Node.js 20.x
+          node-version: '20'
 
       # Paso 4: Instalar RMOA
       - name: Install RMOA
@@ -35,5 +41,10 @@ jobs:
         run: |
           for file in ./apis/*.yaml; do
             echo "Processing $file..."
-            rmoa lint --api-key zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e --filename "$file"
+            rmoa lint \
+              --api-key zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e \
+              --filename "$file" \
+              --minimum-score 70 \
+              --max-errors 0 \
+              --max-warnings 5
           done
