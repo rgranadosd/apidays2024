@@ -13,12 +13,26 @@ jobs:
   rate-my-open-api:
     runs-on: ubuntu-latest
     steps:
+      # Paso 1: Checkout del repositorio
       - uses: actions/checkout@v4
+
+      # Paso 2: Debug para listar archivos en la carpeta apis (opcional, pero útil para verificar estructura)
       - name: Debug - List files in apis directory
         run: ls -l ./apis
+
+      # Paso 3: Instalar Node.js y RMOA (si es necesario ejecutar comandos adicionales)
+      - name: Install Node.js and RMOA
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16 # Ajusta la versión si es necesario
+      - run: npm install -g rmoa
+
+      # Paso 4: Ejecutar RMOA action para analizar los archivos YAML
       - uses: zuplo/rmoa-action@v1
         with:
-          filepath: 'apis/vehicle_images_api.yaml' # Ruta explícita
+          filepath: 'apis/vehicle_images_api.yaml' # Cambia si deseas analizar otro archivo
           apikey: zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e
-      - name: Rate My Open API
-        run: rmoa lint .
+
+      # Paso 5: Usar RMOA para comandos adicionales de linting
+      - name: Run RMOA lint
+        run: rmoa lint apis/vehicle_images_api.yaml
