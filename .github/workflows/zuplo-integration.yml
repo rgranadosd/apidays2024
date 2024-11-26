@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: zuplo/rmoa-action@v1
         with:
-          filepath: 'apis/**/*.yaml'
+          filepath: 'apis/*.yaml'
           apikey: zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e
       - name: Rate My Open API
         run: rmoa lint
