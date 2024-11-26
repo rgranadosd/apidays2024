@@ -30,12 +30,10 @@ jobs:
       - name: Install RMOA
         run: npm install -g rmoa
 
-      # Paso 5: Ejecutar RMOA action para analizar el archivo OpenAPI
-      - uses: zuplo/rmoa-action@v1
-        with:
-          filepath: 'apis/vehicle_images_api.yaml' # Cambia si deseas analizar otro archivo
-          apikey: zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e
-
-      # Paso 6: Usar RMOA CLI para análisis adicional
-      - name: Run RMOA lint
-        run: rmoa lint --api-key zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e --filename apis/vehicle_images_api.yaml
+      # Paso 5: Iterar sobre cada archivo YAML en el directorio apis
+      - name: Process each YAML file
+        run: |
+          for file in ./apis/*.yaml; do
+            echo "Processing $file..."
+            rmoa lint --api-key zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e --filename "$file"
+          done
