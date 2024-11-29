@@ -14,7 +14,7 @@ info:
     - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
   termsOfService: http://swagger.io/terms/
   contact:
-    email: apiteam@swagger.io
+    email: apiteam@swagger.ioo
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
