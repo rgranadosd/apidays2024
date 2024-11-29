@@ -44,7 +44,7 @@ jobs:
             rmoa lint \
               --api-key zpka_3857be3f8c414be1a68a23304c863a94_4c9a8d1e \
               --filename "$file" \
-              --minimum-score 70 \
+              --minimum-score 80 \
               --max-errors 0 \
               --max-warnings 200
               echo "Finished processing $file."
